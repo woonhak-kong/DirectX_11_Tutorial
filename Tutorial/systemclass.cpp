@@ -1,10 +1,12 @@
 #include "stdafx.h"
 #include "systemclass.h"
 
+
+SystemClass* SystemClass::ApplicationHandle = nullptr;
+
 SystemClass::SystemClass()
 {
-	m_Input = nullptr;
-	m_Graphics = nullptr;
+
 }
 
 SystemClass::SystemClass(const SystemClass&)
@@ -115,6 +117,11 @@ void SystemClass::Run()
 	}
 }
 
+HWND& SystemClass::GetHWND()
+{
+	return m_hwnd;
+}
+
 LRESULT SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam)
 {
 	switch (umsg)
@@ -171,7 +178,7 @@ void SystemClass::InitializeWindows(int& screenWidth, int& screenHeight)
 
 	// 외부 포인터를 이 객체로 설정
 	ApplicationHandle = this;
-
+	
 	// 이 어플리케이션의 인스턴스 가져오기.
 	m_hinstance = GetModuleHandle(nullptr);
 
@@ -236,8 +243,8 @@ void SystemClass::InitializeWindows(int& screenWidth, int& screenHeight)
 	SetForegroundWindow(m_hwnd);
 	SetFocus(m_hwnd);
 
-	// 마우스 커서 표시하지 않기
-	ShowCursor(false);
+	// 마우스 커서 표시설정
+	ShowCursor(true);
 
 	return;
 
@@ -287,7 +294,7 @@ LRESULT WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam)
 		// 다른 모든 메세지들은 system 클래스의 메세지 처리기에 전달합니다.
 		default:
 		{
-			return ApplicationHandle->MessageHandler(hwnd, umessage, wparam, lparam);
+			return SystemClass::ApplicationHandle->MessageHandler(hwnd, umessage, wparam, lparam);
 		}
 	}
 }
