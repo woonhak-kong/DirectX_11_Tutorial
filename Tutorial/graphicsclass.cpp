@@ -4,6 +4,7 @@
 #include "CameraClass.h"
 #include "ModelClass.h";
 #include "ColorshaderClass.h"
+#include "TextureShaderClass.h"
 
 GraphicsClass::GraphicsClass()
 {
@@ -52,24 +53,38 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	}
 
 	// m_Model 초기화
-	if (!m_Model->Initialize(m_D3D->GetDevice()))
+	if (!m_Model->Initialize(m_D3D->GetDevice(), L"./Textures/WoodCrate01.dds"))
 	{
 		MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);
 	}
 
-	// m_ColorShader 객체 생성
-	m_ColorShader = new ColorShaderClass;
-	if (!m_ColorShader)
+	// 텍스쳐 쉐이더 객체 생성
+	m_TextureShader = new TextureShaderClass;
+	if (!m_TextureShader)
 	{
 		return false;
 	}
 
-	// m_ColorShader 객체 초기화
-	if (!m_ColorShader->Initialize(m_D3D->GetDevice(), hwnd))
+	// 텍스터 쉐이더 객테 초기화
+	if (!m_TextureShader->Initialize(m_D3D->GetDevice(), hwnd))
 	{
-		MessageBox(hwnd, L"Could not initialize the color shader object.", L"Error", MB_OK);
+		MessageBox(hwnd, L"Could not initialize texture shader object.", L"Error", MB_OK);
 		return false;
 	}
+
+	//// m_ColorShader 객체 생성
+	//m_ColorShader = new ColorShaderClass;
+	//if (!m_ColorShader)
+	//{
+	//	return false;
+	//}
+
+	//// m_ColorShader 객체 초기화
+	//if (!m_ColorShader->Initialize(m_D3D->GetDevice(), hwnd))
+	//{
+	//	MessageBox(hwnd, L"Could not initialize the color shader object.", L"Error", MB_OK);
+	//	return false;
+	//}
 
 	return true;
 }
@@ -77,11 +92,19 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 void GraphicsClass::Shutdown()
 {
 	// m_ColorShader 객체 반환
-	if (m_ColorShader)
+	//if (m_ColorShader)
+	//{
+	//	m_ColorShader->Shutdown();
+	//	delete m_ColorShader;
+	//	m_ColorShader = nullptr;
+	//}
+
+	// m_TextureShader 객체 반환
+	if (m_TextureShader)
 	{
-		m_ColorShader->Shutdown();
-		delete m_ColorShader;
-		m_ColorShader = nullptr;
+		m_TextureShader->Shutdown();
+		delete m_TextureShader;
+		m_TextureShader = nullptr;
 	}
 
 	// m_Model 객체 반환
@@ -137,12 +160,20 @@ bool GraphicsClass::Render()
 	// 모델 버텍스와 인덱스 버퍼를 그래픽 파이프 라인에 배치하여 드로잉을 준비한다.
 	m_Model->Render(m_D3D->GetDeviceContext());
 
-	// 색상 쉐이더를 사용하여 모델을 랜더링 한다.
-	if (!m_ColorShader->Render(m_D3D->GetDeviceContext(),
-		m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix))
+	// 텍스처 쉐이더를 사용하여 모델을 랜더링 한다.
+	if (!m_TextureShader->Render(m_D3D->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
+		m_Model->GetTexture()))
 	{
 		return false;
 	}
+
+
+	// 색상 쉐이더를 사용하여 모델을 랜더링 한다.
+	/*if (!m_ColorShader->Render(m_D3D->GetDeviceContext(),
+		m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix))
+	{
+		return false;
+	}*/
 
 	// 버퍼에 그려진 씬을 화면에 표시합니다.
 	m_D3D->EndScene();

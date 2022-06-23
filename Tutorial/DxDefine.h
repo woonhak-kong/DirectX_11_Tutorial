@@ -1,7 +1,7 @@
 #pragma once
 #pragma once
 
-// ¶óÀÌºê·¯¸® ¸µÅ©
+// ë¼ì´ë¸ŒëŸ¬ë¦¬ ë§í¬
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "d3dcompiler.lib")

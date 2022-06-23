@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "ModelClass.h"
 
+#include "TextureClass.h"
+
 ModelClass::ModelClass()
 {
 }
@@ -13,14 +15,24 @@ ModelClass::~ModelClass()
 {
 }
 
-bool ModelClass::Initialize(ID3D11Device* device)
+bool ModelClass::Initialize(ID3D11Device* device, const WCHAR* textureFilename)
 {
 	// 정점 및 인덱스 버퍼를 초기화합니다.
-	return InitializeBuffers(device);
+	if (!InitializeBuffers(device))
+	{
+		return false;
+	}
+
+	// 이 모델의 텍스처를 로드한다.
+	return LoadTexture(device, textureFilename);
 }
 
 void ModelClass::Shutdown()
 {
+	// 모델 텍스처 반환
+	ReleaseTexture();
+
+	//버텍스 및 인덱스 버퍼 종료
 	ShutdownBuffers();
 }
 
@@ -33,6 +45,37 @@ void ModelClass::Render(ID3D11DeviceContext* deviceContext)
 int ModelClass::GetIndexCount()
 {
 	return m_indexCount;
+}
+
+ID3D11ShaderResourceView* ModelClass::GetTexture()
+{
+	return m_texture->GetTexture();
+}
+
+bool ModelClass::LoadTexture(ID3D11Device* device, const WCHAR* filename)
+{
+	// 텍스쳐클래스 객체 생성
+	m_texture = new TextureClass;
+
+
+	if (!m_texture)
+	{
+		return false;
+	}
+
+	// 객체 초기화
+	return m_texture->Initialize(device, filename);
+}
+
+void ModelClass::ReleaseTexture()
+{
+	// 텍스쳐 클래스 객체 반환
+	if (m_texture)
+	{
+		m_texture->Shutdown();
+		delete m_texture;
+		m_texture = nullptr;
+	}
 }
 
 bool ModelClass::InitializeBuffers(ID3D11Device* device)
@@ -72,16 +115,20 @@ bool ModelClass::InitializeBuffers(ID3D11Device* device)
 
 	// 사각형
 	vertices[0].position = XMFLOAT3(-1.0f, -1.0f, 0.0f); // bottom left.
-	vertices[0].color = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
+	//vertices[0].color = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
+	vertices[0].texture = XMFLOAT2(0.0f, 1.0f);
 
 	vertices[1].position = XMFLOAT3(-1.0f, 1.0f, 0.0f); // Top left
-	vertices[1].color = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
+	//vertices[1].color = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
+	vertices[1].texture = XMFLOAT2(0.0f, 0.0f);
 
 	vertices[2].position = XMFLOAT3(1.0f, 1.0f, 0.0f); // top right.
-	vertices[2].color = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
+	//vertices[2].color = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
+	vertices[2].texture = XMFLOAT2(1.0f, 0.0f);
 
 	vertices[3].position = XMFLOAT3(1.0f, -1.0f, 0.0f); // bottom right.
-	vertices[3].color = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
+	//vertices[3].color = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
+	vertices[3].texture = XMFLOAT2(1.0f, 1.0f);
 
 	// 인덱스 배열의 값을 설정한다.
 	// 삼각형
