@@ -2,7 +2,7 @@
 #include "graphicsclass.h"
 #include "D3dclass.h"
 #include "CameraClass.h"
-#include "ModelClass.h";
+#include "ModelClass.h"
 #include "ColorshaderClass.h"
 #include "TextureShaderClass.h"
 

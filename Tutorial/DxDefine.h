@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #pragma once
 
 // 라이브러리 링크
