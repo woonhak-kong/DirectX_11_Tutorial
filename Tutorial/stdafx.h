@@ -5,7 +5,7 @@
 
 #include <windows.h>
 
-#include <stdlib.h>
+#include <cstdlib>
 #include <malloc.h>
 #include <memory.h>
 #include <tchar.h>

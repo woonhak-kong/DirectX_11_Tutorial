@@ -15,12 +15,19 @@ private:
 		XMFLOAT3 normal;
 	};
 
+	struct ModelType
+	{
+		float x, y, z;
+		float tu, tv;
+		float nx, ny, nz;
+	};
+
 public:
 	ModelClass();
 	ModelClass(const ModelClass& other);
 	~ModelClass();
 
-	bool Initialize(ID3D11Device* device, const WCHAR* textureFilename);
+	bool Initialize(ID3D11Device* device, const char* modelFilename, const WCHAR* textureFilename);
 	void Shutdown();
 	void Render(ID3D11DeviceContext* deviceContext);
 
@@ -36,6 +43,10 @@ private:
 	bool LoadTexture(ID3D11Device* device, const WCHAR* filename);
 	void ReleaseTexture();
 
+	// 모델데이터 로드, 반환
+	bool LoadModel(const char* modelFilename);
+	void ReleaseModel();
+
 
 private:
 	ID3D11Buffer* m_vertexBuffer = nullptr;
@@ -44,6 +55,8 @@ private:
 	int m_indexCount = 0;
 
 	TextureClass* m_texture = nullptr;
+
+	ModelType* m_model = nullptr;
 };
 
 

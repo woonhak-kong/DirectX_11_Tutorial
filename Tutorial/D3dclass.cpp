@@ -321,7 +321,7 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 	m_deviceContext->RSSetViewports(1, &viewport);
 
 	// 투영 행렬을 설정한다.
-	float fieldOfView = 3.141592654 / 4.0f;
+	float fieldOfView = 3.141592654f / 4.0f;
 	float screenAspect = static_cast<float>(screenWidth) / static_cast<float>(screenHeight);
 
 	// 3D 렌더링을 위핸 투영 행렬을 만든다.

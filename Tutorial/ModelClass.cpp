@@ -1,7 +1,8 @@
 #include "stdafx.h"
 #include "ModelClass.h"
-
 #include "TextureClass.h"
+
+#include <fstream>
 
 ModelClass::ModelClass()
 {
@@ -15,8 +16,14 @@ ModelClass::~ModelClass()
 {
 }
 
-bool ModelClass::Initialize(ID3D11Device* device, const WCHAR* textureFilename)
+bool ModelClass::Initialize(ID3D11Device* device, const char* modelFilename, const WCHAR* textureFilename)
 {
+	// 모델 데이터를 로드한다.
+	if (!LoadModel(modelFilename))
+	{
+		return false;
+	}
+
 	// 정점 및 인덱스 버퍼를 초기화합니다.
 	if (!InitializeBuffers(device))
 	{
@@ -34,6 +41,9 @@ void ModelClass::Shutdown()
 
 	//버텍스 및 인덱스 버퍼 종료
 	ShutdownBuffers();
+
+	// 모델 데이타 반환
+	ReleaseModel();
 }
 
 void ModelClass::Render(ID3D11DeviceContext* deviceContext)
@@ -78,13 +88,79 @@ void ModelClass::ReleaseTexture()
 	}
 }
 
+bool ModelClass::LoadModel(const char* modelFilename)
+{
+	// 모델 파일 열기
+	std::ifstream fin;
+	fin.open(modelFilename);
+
+	//파일을 열 수 없으면 종료
+	if (fin.fail())
+	{
+		return false;
+	}
+
+	// 버텍스 카운트의 값까지 읽는다.
+	char input = 0;
+	fin.get(input);
+	while (input != ':')
+	{
+		fin.get(input);
+	}
+
+	// 버텍스 카운트를 읽는다.
+	fin >> m_vertexCount;
+
+	// 인덱스의 수를 정점 수와 같게 설정한다.
+	m_indexCount = m_vertexCount;
+
+	// 읽어 들인 정점 개수를 사용하여 모델을 만든다.
+	m_model = new ModelType[m_vertexCount];
+	if (!m_model)
+	{
+		return false;
+	}
+
+	// 데이터의 시작 부분까지 읽는다.
+	fin.get(input);
+	while (input != ':')
+	{
+		fin.get(input);
+	}
+	fin.get(input);
+	fin.get(input);
+
+	// 버텍스 데이터를 읽는다.
+	for (int i = 0; i < m_vertexCount; i++)
+	{
+		fin >> m_model[i].x >> m_model[i].y >> m_model[i].z;
+		fin >> m_model[i].tu >> m_model[i].tv;
+		fin >> m_model[i].nx >> m_model[i].ny >> m_model[i].nz;
+	}
+
+	// 모델 파일을 닫는다.
+	fin.close();
+
+	return true;
+}
+
+void ModelClass::ReleaseModel()
+{
+	if (m_model)
+	{
+		delete[] m_model;
+		m_model = nullptr;
+	}
+	
+}
+
 bool ModelClass::InitializeBuffers(ID3D11Device* device)
 {
 	// 정점 배열의 정점 수를 설정합니다.
-	m_vertexCount = 4;
+	//m_vertexCount = 4;
 
 	// 인덱스 배열의 인덱스 수를 설정합니다.
-	m_indexCount = 6;
+	//m_indexCount = 6;
 
 	// 정점 배열을 만든다.
 	VertexType* vertices = new VertexType[m_vertexCount];
@@ -100,7 +176,16 @@ bool ModelClass::InitializeBuffers(ID3D11Device* device)
 		return false;
 	}
 
-	// 정점 배열에 데이터를 설정합니다.
+	// 정점 배열과 인덱스 배열을 더이상 직접 입력하지 않고 데이터로 읽어 온다.
+	for (int i = 0; i < m_vertexCount; i++)
+	{
+		vertices[i].position = XMFLOAT3(m_model[i].x, m_model[i].y, m_model[i].z);
+		vertices[i].texture= XMFLOAT2(m_model[i].tu, m_model[i].tv);
+		vertices[i].normal= XMFLOAT3(m_model[i].nx, m_model[i].ny, m_model[i].nz);
+
+		indices[i] = i;
+	}
+
 
 	// 삼각형
 	//vertices[0].position = XMFLOAT3(-1.0f, -1.0f, 0.0f); // bottom left.
@@ -114,21 +199,21 @@ bool ModelClass::InitializeBuffers(ID3D11Device* device)
 
 
 	// 사각형
-	vertices[0].position = XMFLOAT3(-1.0f, -1.0f, 0.0f); // bottom left.
-	vertices[0].texture = XMFLOAT2(0.0f, 1.0f);
-	vertices[0].normal = XMFLOAT3(0.0f, 0.0f, -1.0f);
+	//vertices[0].position = XMFLOAT3(-1.0f, -1.0f, 0.0f); // bottom left.
+	//vertices[0].texture = XMFLOAT2(0.0f, 1.0f);
+	//vertices[0].normal = XMFLOAT3(0.0f, 0.0f, -1.0f);
 
-	vertices[1].position = XMFLOAT3(-1.0f, 1.0f, 0.0f); // Top left
-	vertices[1].texture = XMFLOAT2(0.0f, 0.0f);
-	vertices[1].normal = XMFLOAT3(0.0f, 0.0f, -1.0f);
+	//vertices[1].position = XMFLOAT3(-1.0f, 1.0f, 0.0f); // Top left
+	//vertices[1].texture = XMFLOAT2(0.0f, 0.0f);
+	//vertices[1].normal = XMFLOAT3(0.0f, 0.0f, -1.0f);
 
-	vertices[2].position = XMFLOAT3(1.0f, 1.0f, 0.0f); // top right.
-	vertices[2].texture = XMFLOAT2(1.0f, 0.0f);
-	vertices[2].normal = XMFLOAT3(0.0f, 0.0f, -1.0f);
+	//vertices[2].position = XMFLOAT3(1.0f, 1.0f, 0.0f); // top right.
+	//vertices[2].texture = XMFLOAT2(1.0f, 0.0f);
+	//vertices[2].normal = XMFLOAT3(0.0f, 0.0f, -1.0f);
 
-	vertices[3].position = XMFLOAT3(1.0f, -1.0f, 0.0f); // bottom right.
-	vertices[3].texture = XMFLOAT2(1.0f, 1.0f);
-	vertices[3].normal = XMFLOAT3(0.0f, 0.0f, -1.0f);
+	//vertices[3].position = XMFLOAT3(1.0f, -1.0f, 0.0f); // bottom right.
+	//vertices[3].texture = XMFLOAT2(1.0f, 1.0f);
+	//vertices[3].normal = XMFLOAT3(0.0f, 0.0f, -1.0f);
 
 	// 인덱스 배열의 값을 설정한다.
 	// 삼각형
@@ -137,12 +222,12 @@ bool ModelClass::InitializeBuffers(ID3D11Device* device)
 	//indices[2] = 2; // Bottom right;
 
 	// 사각형
-	indices[0] = 0; // Bottom left;
-	indices[1] = 1; // Top left;
-	indices[2] = 2; // Top right;
-	indices[3] = 2; // Top right;
-	indices[4] = 3; // Bottom right;
-	indices[5] = 0; // Bottom left;
+	//indices[0] = 0; // Bottom left;
+	//indices[1] = 1; // Top left;
+	//indices[2] = 2; // Top right;
+	//indices[3] = 2; // Top right;
+	//indices[4] = 3; // Bottom right;
+	//indices[5] = 0; // Bottom left;
 
 
 	// 정점 버퍼의 description 작성.

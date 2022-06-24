@@ -53,7 +53,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	}
 
 	// m_Model 초기화
-	if (!m_Model->Initialize(m_D3D->GetDevice(), L"./Textures/WoodCrate01.dds"))
+	if (!m_Model->Initialize(m_D3D->GetDevice(), "./cube.txt", L"./Textures/WoodCrate01.dds"))
 	{
 		MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);
 	}
@@ -94,7 +94,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	}
 
 	// Light 객체 초기화
-	m_Light->SetDiffuseColor(1.0f, 0.0f, 1.0f, 1.0f);
+	m_Light->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
 	m_Light->SetDirection(0.0f, 0.0f, 1.0f);
 
 	return true;
