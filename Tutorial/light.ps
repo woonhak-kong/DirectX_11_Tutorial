@@ -7,8 +7,10 @@ cbuffer LightBuffer
 	float4 ambientColor;
 	float4 diffuseColor;
 	float3 lightDirection;
-	float padding;
+	float specularPower;
+	float4 specularColor;
 };
+
 
 
 // Typedefs
@@ -18,6 +20,7 @@ struct PixelInputType
 	float4 position : SV_POSITION;
 	float2 tex : TEXCOORD0;
 	float3 normal : NORMAL;
+	float3 viewDirection : TEXCOORD1;
 };
 
 // Pixel Shader
@@ -35,6 +38,9 @@ float4 LightPixelShader(PixelInputType input) : SV_TARGET
 	// 모든 픽셀에 색상을 기본으로 주변광으로 설정한다.
 	color = ambientColor;
 
+	// specular color를 초기화 한다.
+	float4 specular = float4(0.0f, 0.0f, 0.0f, 0.0f);
+
 	// 계산을 위해 빛 방향을 반전시킨다.
 	lightDir = -lightDirection;
 
@@ -43,15 +49,24 @@ float4 LightPixelShader(PixelInputType input) : SV_TARGET
 
 	if (lightIntensity > 0.0f)
 	{
-		// 법선과 빛의 방향의 내적이 0보다 클때만 조명값을 주변광에 더해준다.
+		// 법선과 빛의 방향의 내적이 0보다 클때(두 벡터의 사이각이 90도 미만일때)만 조명값을 주변광에 더해준다.
 		color += (diffuseColor * lightIntensity);
-	}
 
-	// 주변광과 조명의 조합의 결과가 1이 넘을 수 있으므로 saturate함수로 최종 색상이 적절한 값이 되도록 잘라낸다.
-	color = saturate(color);
+		// 주변광과 조명의 조합의 결과가 1이 넘을 수 있으므로 saturate함수로 최종 색상이 적절한 값이 되도록 잘라낸다.
+		color = saturate(color);
+
+		// 빛의 강도, 법선 벡터 및 빛의 방향에 따라 반사 벡터를 계산한다.
+		float3 reflection = normalize(2 * lightIntensity * input.normal - lightDir);
+
+		// 반사 벡터, 시선 방향 및 반사 출력을 기준으로 반사 조명의 양을 결정한다.
+		specular = pow(saturate(dot(reflection, input.viewDirection)), specularPower);
+	}
 
 	// 텍스쳐 픽셀과 최종 확산 색을 곱하여 최종 픽셀 색상 결과를 얻습니다.
 	color = color * textureColor;
+
+	// 출력 색상의 마지막에 반사 컴포넌트를 추가한다.
+	color = saturate(color + specular);
 
 	return color;
 }
