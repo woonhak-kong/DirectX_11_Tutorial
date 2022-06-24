@@ -115,20 +115,20 @@ bool ModelClass::InitializeBuffers(ID3D11Device* device)
 
 	// 사각형
 	vertices[0].position = XMFLOAT3(-1.0f, -1.0f, 0.0f); // bottom left.
-	//vertices[0].color = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
 	vertices[0].texture = XMFLOAT2(0.0f, 1.0f);
+	vertices[0].normal = XMFLOAT3(0.0f, 0.0f, -1.0f);
 
 	vertices[1].position = XMFLOAT3(-1.0f, 1.0f, 0.0f); // Top left
-	//vertices[1].color = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
 	vertices[1].texture = XMFLOAT2(0.0f, 0.0f);
+	vertices[1].normal = XMFLOAT3(0.0f, 0.0f, -1.0f);
 
 	vertices[2].position = XMFLOAT3(1.0f, 1.0f, 0.0f); // top right.
-	//vertices[2].color = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
 	vertices[2].texture = XMFLOAT2(1.0f, 0.0f);
+	vertices[2].normal = XMFLOAT3(0.0f, 0.0f, -1.0f);
 
 	vertices[3].position = XMFLOAT3(1.0f, -1.0f, 0.0f); // bottom right.
-	//vertices[3].color = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
 	vertices[3].texture = XMFLOAT2(1.0f, 1.0f);
+	vertices[3].normal = XMFLOAT3(0.0f, 0.0f, -1.0f);
 
 	// 인덱스 배열의 값을 설정한다.
 	// 삼각형

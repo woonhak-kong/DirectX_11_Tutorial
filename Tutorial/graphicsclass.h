@@ -13,7 +13,9 @@ class D3DClass;
 class CameraClass;
 class ModelClass;
 //class ColorShaderClass;
-class TextureShaderClass;
+//class TextureShaderClass;
+class LightShaderClass;
+class LightClass;
 
 class GraphicsClass
 {
@@ -28,14 +30,16 @@ public:
 	bool Frame();
 
 private:
-	bool Render();
+	bool Render(float rotation);
 
 private:
 	D3DClass* m_D3D = nullptr;
 	CameraClass* m_Camera = nullptr;
 	ModelClass* m_Model = nullptr;
-	TextureShaderClass* m_TextureShader = nullptr;
+	//TextureShaderClass* m_TextureShader = nullptr;
 	//ColorShaderClass* m_ColorShader = nullptr;
+	LightShaderClass* m_LightShader = nullptr;
+	LightClass* m_Light = nullptr;
 };
 
 #endif // _GRAPHICSCLASS_H_

@@ -11,9 +11,8 @@ private:
 	struct VertexType
 	{
 		XMFLOAT3 position;
-		//XMFLOAT4 color;
-		// 텍스쳐 용으로 변경
 		XMFLOAT2 texture;
+		XMFLOAT3 normal;
 	};
 
 public:
