@@ -278,6 +278,7 @@ void BitmapClass::RenderBuffers(ID3D11DeviceContext* deviceContext)
 bool BitmapClass::LoadTexture(ID3D11Device* device, const WCHAR* filename)
 {
 	// 텍스쳐 오브젝트를 생성한다.
+	m_texture = new TextureClass;
 	if (!m_texture)
 	{
 		return false;
