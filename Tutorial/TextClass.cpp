@@ -16,7 +16,7 @@ TextClass::~TextClass()
 {
 }
 
-bool TextClass::Initalize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, HWND hwnd, int screenWidth, int screenHeight, XMMATRIX baseViewMatrix)
+bool TextClass::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, HWND hwnd, int screenWidth, int screenHeight, XMMATRIX baseViewMatrix)
 {
 
 	// 화면 너비 높이 값 저장.
@@ -73,7 +73,7 @@ bool TextClass::Initalize(ID3D11Device* device, ID3D11DeviceContext* deviceConte
 	}
 
 	// 이젠 Sentence Vertex Buffer를 문장으로 업데이트 한다.
-	if (!(UpdateSentence(m_sentence2, "Goodbye", 100, 100, 1.0f, 1.0f, 1.0f, deviceContext)))
+	if (!(UpdateSentence(m_sentence2, "Goodbye", 100, 200, 1.0f, 1.0f, 0.0f, deviceContext)))
 	{
 		return false;
 	}
