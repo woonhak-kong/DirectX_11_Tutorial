@@ -7,6 +7,7 @@
 #include "ModelClass.h"
 #include "LightShaderClass.h"
 #include "LightClass.h"
+#include "TextClass.h"
 #include "TextureShaderClass.h"
 
 GraphicsClass::GraphicsClass()
@@ -46,7 +47,24 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	}
 
 	// 카메라 포지션 설정
+	XMMATRIX baseViewMatrix;
 	m_Camera->SetPosition(0.0f, 0.0f, -5.0f);
+	m_Camera->Render();
+	m_Camera->GetViewMatrix(baseViewMatrix);
+
+	// 텍스트 객체 생성
+	m_Text = new TextClass;
+	if (!m_Text)
+	{
+		return false;
+	}
+
+	// 텍스트 객체 초기화
+	if (!m_Text->Initialize(m_D3D->GetDevice(), m_D3D->GetDeviceContext(), hwnd, screenWidth, screenHeight,baseViewMatrix))
+	{
+		MessageBox(hwnd, L"Could not initialize the Text object.", L"Error", MB_OK);
+		return false;
+	}
 
 	//// m_Model 객체 생성
 	//m_Model = new ModelClass;
@@ -62,18 +80,18 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	//}
 
 	// 텍스쳐 쉐이더 객체 생성
-	m_TextureShader = new TextureShaderClass;
-	if (!m_TextureShader)
-	{
-		return false;
-	}
+	//m_TextureShader = new TextureShaderClass;
+	//if (!m_TextureShader)
+	//{
+	//	return false;
+	//}
 
 	//// 텍스터 쉐이더 객테 초기화
-	if (!m_TextureShader->Initialize(m_D3D->GetDevice(), hwnd))
-	{
-		MessageBox(hwnd, L"Could not initialize texture shader object.", L"Error", MB_OK);
-		return false;
-	}
+	//if (!m_TextureShader->Initialize(m_D3D->GetDevice(), hwnd))
+	//{
+	//	MessageBox(hwnd, L"Could not initialize texture shader object.", L"Error", MB_OK);
+	//	return false;
+	//}
 
 	//// LightShaderClass 객체 생성
 	//m_LightShader = new LightShaderClass;
@@ -104,32 +122,39 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	//m_Light->SetSpecularPower(32.0f);
 
 	// 비트맵 객체 생성
-	m_Bitmap = new BitmapClass;
-	if (!m_Bitmap)
-	{
-		return false;
-	}
+	//m_Bitmap = new BitmapClass;
+	//if (!m_Bitmap)
+	//{
+	//	return false;
+	//}
 
 	// 비트맵 객체 초기화
-	if (!m_Bitmap->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight, L"./Textures/WoodCrate01.dds",
-		512, 512))
-	{
-		MessageBox(hwnd, L"Could not initialize the bitmap object.", L"Error", MB_OK);
-		return false;
-	}
+	//if (!m_Bitmap->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight, L"./Textures/WoodCrate01.dds",
+	//	512, 512))
+	//{
+	//	MessageBox(hwnd, L"Could not initialize the bitmap object.", L"Error", MB_OK);
+	//	return false;
+	//}
 
 	return true;
 }
 
 void GraphicsClass::Shutdown()
 {
-	// 비트맵 객체 해제
-	if (m_Bitmap)
+	// 텍스트 객체 해제
+	if (m_Text)
 	{
-		m_Bitmap->Shutdown();
-		delete m_Bitmap;
-		m_Bitmap = nullptr;
+		m_Text->Shutdown();
+		delete m_Text;
+		m_Text = nullptr;
 	}
+	// 비트맵 객체 해제
+	//if (m_Bitmap)
+	//{
+	//	m_Bitmap->Shutdown();
+	//	delete m_Bitmap;
+	//	m_Bitmap = nullptr;
+	//}
 	//// light 객체 해제
 	//if (m_Light)
 	//{
@@ -214,11 +239,14 @@ bool GraphicsClass::Render(float rotation)
 	// 2D 렌더링을 시작하기 위해 Z버퍼를 끈다.
 	m_D3D->TurnZBufferOff();
 
+	// 알파 블렌딩을 켠다.
+	m_D3D->TurnOnAlphaBlending();
+
 	// 비트맵 버텍스와 인덱스 버퍼를 그래픽 파이프 라인에 배치하여 그리기를 준비한다.
-	if (!m_Bitmap->Render(m_D3D->GetDeviceContext(), 100, 100))
-	{
-		return false;
-	}
+	//if (!m_Bitmap->Render(m_D3D->GetDeviceContext(), 100, 100))
+	//{
+	//	return false;
+	//}
 
 	// 도형이 회전 할 수 있도록 회전 값으로 월드 행렬을 회전한다.
 	// = XMMatrixRotationY(rotation);
@@ -235,13 +263,19 @@ bool GraphicsClass::Render(float rotation)
 	//	return false;
 	//}
 
-
-	// 텍스처 쉐이더를 사용하여 모델을 랜더링 한다.
-	if (!m_TextureShader->Render(m_D3D->GetDeviceContext(), m_Bitmap->GetIndexCount(), worldMatrix, viewMatrix, orthoMatrix,
-		m_Bitmap->GetTexture()))
+	// 텍스트 문자열을 렌더한다.
+	if (!m_Text->Render(m_D3D->GetDeviceContext(), worldMatrix, orthoMatrix))
 	{
 		return false;
 	}
+
+
+	// 텍스처 쉐이더를 사용하여 모델을 랜더링 한다.
+	//if (!m_TextureShader->Render(m_D3D->GetDeviceContext(), m_Bitmap->GetIndexCount(), worldMatrix, viewMatrix, orthoMatrix,
+	//	m_Bitmap->GetTexture()))
+	//{
+	//	return false;
+	//}
 
 	// 모든2D 렌더링이 완료되었으므로 Z버퍼를 다시 켠다.
 	m_D3D->TurnZBufferOn();

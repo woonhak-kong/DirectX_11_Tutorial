@@ -17,6 +17,7 @@ class TextureShaderClass;
 class BitmapClass;
 class LightShaderClass;
 class LightClass;
+class TextClass;
 
 class GraphicsClass
 {
@@ -38,11 +39,12 @@ private:
 	CameraClass* m_Camera = nullptr;
 
 	//ModelClass* m_Model = nullptr;
-	TextureShaderClass* m_TextureShader = nullptr;
-	BitmapClass* m_Bitmap = nullptr;
+	//TextureShaderClass* m_TextureShader = nullptr;
+	//BitmapClass* m_Bitmap = nullptr;
 	//ColorShaderClass* m_ColorShader = nullptr;
 	//LightShaderClass* m_LightShader = nullptr;
 	//LightClass* m_Light = nullptr;
+	TextClass* m_Text = nullptr;
 };
 
 #endif // _GRAPHICSCLASS_H_
