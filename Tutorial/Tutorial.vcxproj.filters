@@ -115,12 +115,30 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="color.ps" />
-    <None Include="color.vs" />
-    <None Include="light.ps" />
-    <None Include="light.vs" />
     <None Include="README.md" />
-    <None Include="texture.ps" />
-    <None Include="texture.vs" />
+    <None Include="color.ps">
+      <Filter>리소스 파일</Filter>
+    </None>
+    <None Include="color.vs">
+      <Filter>리소스 파일</Filter>
+    </None>
+    <None Include="light.ps">
+      <Filter>리소스 파일</Filter>
+    </None>
+    <None Include="light.vs">
+      <Filter>리소스 파일</Filter>
+    </None>
+    <None Include="texture.vs">
+      <Filter>리소스 파일</Filter>
+    </None>
+    <None Include="texture.ps">
+      <Filter>리소스 파일</Filter>
+    </None>
+    <None Include="Font.vs">
+      <Filter>리소스 파일</Filter>
+    </None>
+    <None Include="Font.ps">
+      <Filter>리소스 파일</Filter>
+    </None>
   </ItemGroup>
 </Project>

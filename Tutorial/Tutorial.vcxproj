@@ -59,6 +59,8 @@
   <ItemGroup>
     <None Include="color.ps" />
     <None Include="color.vs" />
+    <None Include="Font.ps" />
+    <None Include="Font.vs" />
     <None Include="light.ps" />
     <None Include="light.vs" />
     <None Include="README.md" />
