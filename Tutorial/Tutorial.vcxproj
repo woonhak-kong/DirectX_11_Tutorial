@@ -24,6 +24,7 @@
     <ClCompile Include="ColorshaderClass.cpp" />
     <ClCompile Include="D3dclass.cpp" />
     <ClCompile Include="DDSTextureLoader.cpp" />
+    <ClCompile Include="FontClass.cpp" />
     <ClCompile Include="graphicsclass.cpp" />
     <ClCompile Include="inputclass.cpp" />
     <ClCompile Include="LightClass.cpp" />
@@ -44,6 +45,7 @@
     <ClInclude Include="D3dclass.h" />
     <ClInclude Include="DDSTextureLoader.h" />
     <ClInclude Include="DxDefine.h" />
+    <ClInclude Include="FontClass.h" />
     <ClInclude Include="graphicsclass.h" />
     <ClInclude Include="inputclass.h" />
     <ClInclude Include="LightClass.h" />
