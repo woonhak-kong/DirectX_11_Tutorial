@@ -40,6 +40,13 @@ bool InputClass::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, int
 		return false;
 	}
 
+	// 다른 프로그램과 공유 할 수 있도록 키보드의 협력 수준을 설정한다.
+	result = m_keyboard->SetCooperativeLevel(hwnd, DISCL_FOREGROUND | DISCL_EXCLUSIVE);
+	if (FAILED(result))
+	{
+		return false;
+	}
+
 	// 키보드를 할당 받는다.
 	result = m_keyboard->Acquire();
 	if (FAILED(result))
