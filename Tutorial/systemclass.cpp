@@ -38,7 +38,12 @@ bool SystemClass::Initialize()
 	}
 
 	// Input 객체를 초기화한다.
-	m_Input->Initialize();
+	result = m_Input->Initialize(m_hinstance, m_hwnd, screenWidth, screenHeight);
+	if (!result)
+	{
+		MessageBox(m_hwnd, L"Could not initialize the input object.", L"Error", MB_OK);
+		return false;
+	}
 
 	// graphics 객체를 생성한다.
 	// 이 객체는 이 어플리케이션의 모든 그래픽 요소를 그리는 일을 한다.
@@ -72,6 +77,7 @@ void SystemClass::Shutdown()
 	// Input 객체를 반환합니다.
 	if (m_Input)
 	{
+		m_Input->Shutdown();
 		delete m_Input;
 		m_Input = nullptr;
 	}
@@ -111,8 +117,15 @@ void SystemClass::Run()
 			result = Frame();
 			if (!result)
 			{
+				MessageBox(m_hwnd, L"Frame processing Failed", L"Error", MB_OK);
 				done = true;
 			}
+		}
+
+		// 유저가 Escape 키를 눌렀는지 확인한다.
+		if (m_Input->IsEscapePressed())
+		{
+			done = true;
 		}
 	}
 }
@@ -124,44 +137,34 @@ HWND& SystemClass::GetHWND()
 
 LRESULT SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam)
 {
-	switch (umsg)
-	{
-		// 키보드키가 눌렸는지 확인
-		case WM_KEYDOWN:
-		{
-			m_Input->KeyDown(static_cast<unsigned int>(wparam));
-			return 0;
-		}
-
-		// 키보드의 눌린 키가 떼어졌는지 확인
-		case WM_KEYUP:
-		{
-			// 키가 떼어졌다면 input 객체에 이 사실을 전달하여 이 키를 해제토록 한다.
-			m_Input->KeyUp(static_cast<unsigned int>(wparam));
-			return 0;
-		}
-
-		// 다른 메세지들은 사용하지 않으므로 기본 메세지 처리기에 전달
-		default:
-		{
-			return DefWindowProc(hwnd, umsg, wparam, lparam);
-		}
-	}
+	return DefWindowProc(hwnd, umsg, wparam, lparam);
 }
 
 bool SystemClass::Frame()
 {
-
 	bool result;
+	int mouseX, mouseY;
 
-	// 유저가 Esc키를 누를시 종료.
-	if (m_Input->IsKeyDown(VK_ESCAPE))
+	// 입력 프레임 절차
+	result = m_Input->Frame();
+	if (!result)
 	{
 		return false;
 	}
 
-	// graphics 객체의 작업을 처리합니다.
-	result = m_Graphics->Frame();
+	// 마우스 위치를 가져온다.
+	m_Input->GetMouseLocation(mouseX, mouseY);
+
+
+	// graphics 객체의 작업을 처리합니다. 마우스 위치값을 매개변수로
+	result = m_Graphics->Frame(mouseX, mouseY);
+	if (!result)
+	{
+		return false;
+	}
+
+	// 렌더한다.
+	result = m_Graphics->Render();
 	if (!result)
 	{
 		return false;
