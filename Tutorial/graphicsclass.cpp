@@ -202,26 +202,26 @@ void GraphicsClass::Shutdown()
 	}
 }
 
-bool GraphicsClass::Frame()
+bool GraphicsClass::Frame(int mouseX, int mouseY)
 {
-	static float rotation = 0.0f;
+	bool result;
 
-	// 각 프레임 마다 rotation 변수값을 업데이트 한다.
-	rotation += XM_PI * 0.005f;
-	if (rotation > 360.0f)
+	// 마우스 위치 세팅
+	result = m_Text->SetMousePosition(mouseX, mouseY, m_D3D->GetDeviceContext());
+	if (!result)
 	{
-		rotation -= 360.0f;
-	}
-	//그래픽 렌더링을 수행합니다.
-	if (!Render(rotation))
-	{
-		
 		return false;
 	}
+
+
+	// 카메라 위치 세팅
+	//m_Camera->SetPosition(0.0f, 0.0f, -10.0f);
+	
 	return true;
 }
 
-bool GraphicsClass::Render(float rotation)
+
+bool GraphicsClass::Render()
 {
 	// 씬 그리기를 시작하기 위해 버퍼의 내용을 지웁니다.
 	m_D3D->BeginScene(0.0f, 0.0f, 0.0f, 1.0f);
