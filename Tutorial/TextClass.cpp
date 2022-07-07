@@ -126,6 +126,43 @@ bool TextClass::Render(ID3D11DeviceContext* deviceContext, XMMATRIX worldMatrix,
 	return true;
 }
 
+bool TextClass::SetMousePosition(int mouseX, int mouseY, ID3D11DeviceContext* deviceContext)
+{
+	char tempString[16];
+	char mouseString[16];
+	bool result;
+
+	// 마우스X 위치 정수를 문자열로 변경.
+	_itoa_s(mouseX, tempString, 10);
+
+	// 마우스X 문자열 만들기
+	strcpy_s(mouseString, "Mouse X: ");
+	strcpy_s(mouseString, tempString);
+
+	// Sentence 를 새로운 문자열로 업데이트한다.
+	result = UpdateSentence(m_sentence1, mouseString, 20, 20, 1.0f, 1.0f, 1.0f, deviceContext);
+	if (!result)
+	{
+		return false;
+	}
+
+	// 마우스Y 위치 정수를 문자열로 변경.
+	_itoa_s(mouseY, tempString, 10);
+
+	// 마우스Y 문자열 만들기
+	strcpy_s(mouseString, "Mouse Y: ");
+	strcpy_s(mouseString, tempString);
+
+	// Sentence2 를 새로운 문자열로 업데이트한다.
+	result = UpdateSentence(m_sentence2, mouseString, 20, 40, 1.0f, 1.0f, 1.0f, deviceContext);
+	if (!result)
+	{
+		return false;
+	}
+
+	return true;
+}
+
 bool TextClass::InitializeSentence(SentenceType** sentence, int maxLength, ID3D11Device* device)
 {
 	// SentenceType 객체 생성
@@ -187,7 +224,7 @@ bool TextClass::InitializeSentence(SentenceType** sentence, int maxLength, ID3D1
 	vertexData.SysMemSlicePitch = 0;
 
 	// 버텍스 버퍼 생성
-	bool result = device->CreateBuffer(&vertexBufferDesc, &vertexData, &(*sentence)->vertexBuffer);
+	auto result = device->CreateBuffer(&vertexBufferDesc, &vertexData, &(*sentence)->vertexBuffer);
 	if (FAILED(result))
 	{
 		return false;
@@ -259,7 +296,7 @@ bool TextClass::UpdateSentence(SentenceType* sentence, const char* text, int pos
 
 	// 버텍스 버퍼를 쓰기 위해 잠근다.
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
-	bool result = deviceContext->Map(sentence->vertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	HRESULT result = deviceContext->Map(sentence->vertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	if (FAILED(result))
 	{
 		return false;
